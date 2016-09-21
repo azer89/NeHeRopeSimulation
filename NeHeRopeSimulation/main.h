@@ -27,6 +27,8 @@
 *										*
 *********************************************************************************/
 
+// http:_//nehe.gamedev.net/tutorial/rope_physics/17006/
+
 
 #ifndef _MAIN_H_
 #define _MAIN_H_

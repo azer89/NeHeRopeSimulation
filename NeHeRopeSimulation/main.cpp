@@ -17,6 +17,8 @@
 			SDL only support the function under those two OSes.
 
 			Fabio 'SnowDruid' Franchello (snowdruid@tiscalinet.it)
+
+			http:_//nehe.gamedev.net/tutorial/rope_physics/17006/
 */
 
 // Includes

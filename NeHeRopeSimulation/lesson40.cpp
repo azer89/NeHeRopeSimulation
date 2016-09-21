@@ -12,6 +12,8 @@
 
   Ported to SDL under Linux by Gianni Cestari
 
+  http:_//nehe.gamedev.net/tutorial/rope_physics/17006/
+
 **************************************************************************/
 
 // Includes

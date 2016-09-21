@@ -4,6 +4,8 @@
 
   Prepared by Erkin Tunca for nehe.gamedev.net
 
+  http:_//nehe.gamedev.net/tutorial/rope_physics/17006/
+
 **************************************************************************/
 
 #include <math.h>
