@@ -29,12 +29,14 @@ extern S_AppStatus AppStatus;									// We're Using This Struct As A Repository
   implements the force applied by this surface. In the code, the surface is refered as "ground".
 */
 RopeSimulation* ropeSimulation = new RopeSimulation(
-													80,						// 80 Particles (Masses)
+													8 ,						// 80 Particles (Masses)
 													0.05f,					// Each Particle Has A Weight Of 50 Grams
 													10000.0f,				// springConstant In The Rope
-													0.05f,					// Normal Length Of Springs In The Rope
+													0.25f,					// Normal Length Of Springs In The Rope     0.05f
 													0.2f,					// Spring Inner Friction Constant
-													Vector3D(0, -9.81f, 0), // Gravitational Acceleration
+													//Vector3D(0, -9.81f, 0), // Gravitational Acceleration
+													Vector3D(0, 0, 0),
+													//Vector3D(0, 0, -10),
 													0.02f,					// Air Friction Constant
 													100.0f,					// Ground Repel Constant
 													0.2f,					// Ground Slide Friction Constant
@@ -76,50 +78,52 @@ void Deinitialize(void)											// Any User Deinitialization Goes Here
 	return;														// We Have Nothing To Deinit Now
 }
 
-void Update(Uint32 milliseconds, Uint8 *Keys)					// Perform Motion Updates Here
+void Update(Uint32 milliseconds, Uint8 *Keys)  // Perform Motion Updates Here
 {
-	if(Keys)													// If We're Sent A Key Event With The Update
+	if(Keys)                                   // If We're Sent A Key Event With The Update
 	{
-		if(Keys[SDLK_ESCAPE])									// And If The Key Pressed Was ESC
+		if(Keys[SDLK_ESCAPE])                  // And If The Key Pressed Was ESC
 		{
-			TerminateApplication();								// Terminate The Application
+			TerminateApplication();            // Terminate The Application
 		}
 
-		if(Keys[SDLK_F1])										// If The Key Pressed Was F1
+		if(Keys[SDLK_F1])                      // If The Key Pressed Was F1
 		{
-			ToggleFullscreen();									// Use SDL Function To Toggle Fullscreen Mode (But Not In Windows :) )
+			ToggleFullscreen();                // Use SDL Function To Toggle Fullscreen Mode (But Not In Windows :) )
 		}
 
-		Vector3D ropeConnectionVel;						// Create A Temporary Vector3D
+		Vector3D ropeConnectionVel;            // Create A Temporary Vector3D
 
-		if(Keys[SDLK_UP])										// If The Key Pressed Was Up Arrow
+		if(Keys[SDLK_UP])                      // If The Key Pressed Was Up Arrow
 		{
-			ropeConnectionVel.z -= 3.0f;					// Add Velocity In +Z Direction
+			//ropeConnectionVel.z -= 3.0f;     // Add Velocity In +Z Direction
+			ropeConnectionVel.y += 3.0f;
 		}
 
-		if(Keys[SDLK_DOWN])										// If The Key Pressed Was Down Arrow
+		if(Keys[SDLK_DOWN])                    // If The Key Pressed Was Down Arrow
 		{
-			ropeConnectionVel.z += 3.0f;					// Add Velocity In -Z Direction
+			//ropeConnectionVel.z += 3.0f;     // Add Velocity In -Z Direction
+			ropeConnectionVel.y -= 3.0f;
 		}
 
-		if(Keys[SDLK_LEFT])										// If The Key Pressed Was Left Arrow
+		if(Keys[SDLK_LEFT])	                  // If The Key Pressed Was Left Arrow
 		{
-			ropeConnectionVel.x -= 3.0f;						// Add Velocity In -X Direction
+			ropeConnectionVel.x -= 3.0f;     // Add Velocity In -X Direction
 		}
 
-		if(Keys[SDLK_RIGHT])										// If The Key Pressed Was Right Arrow
+		if(Keys[SDLK_RIGHT])                 // If The Key Pressed Was Right Arrow
 		{
-			ropeConnectionVel.x += 3.0f;						// Add Velocity In +X Direction
+			ropeConnectionVel.x += 3.0f;     // Add Velocity In +X Direction
 		}
 
-		if(Keys[SDLK_HOME])										// If The Key Pressed Was Right Arrow
+		if(Keys[SDLK_HOME])                  // If The Key Pressed Was Right Arrow
 		{
-			ropeConnectionVel.y += 3.0f;						// Add Velocity In +Y Direction
+			//ropeConnectionVel.y += 3.0f;   // Add Velocity In +Y Direction
 		}
 
-		if(Keys[SDLK_END])										// If The Key Pressed Was Right Arrow
+		if(Keys[SDLK_END])                   // If The Key Pressed Was Right Arrow
 		{
-			ropeConnectionVel.y -= 3.0f;						// Add Velocity In -Y Direction
+			//ropeConnectionVel.y -= 3.0f;   // Add Velocity In -Y Direction
 		}
 		ropeSimulation->setRopeConnectionVel(ropeConnectionVel);		// Set The Obtained ropeConnectionVel In The Simulation
 
@@ -152,7 +156,7 @@ void Draw(void)													// Our Drawing Code
 
 	// Draw A Plane To Represent The Ground (Different Colors To Create A Fade)
 	glBegin(GL_QUADS);
-		glColor3ub(0, 0, 255);												// Set Color To Light Blue
+		glColor3ub(100, 100, 255);												// Set Color To Light Blue
 		glVertex3f(20, ropeSimulation->groundHeight, 20);
 		glVertex3f(-20, ropeSimulation->groundHeight, 20);
 		glColor3ub(0, 0, 0);												// Set Color To Black
@@ -179,7 +183,7 @@ void Draw(void)													// Our Drawing Code
 	// Drawing Shadow Ends Here.
 
 	// Start Drawing The Rope.
-	glColor3ub(255, 255, 0);												// Set Color To Yellow
+	glColor3ub(255, 255, 100);												// Set Color To Yellow
 	for (int index = 0; index < ropeSimulation->numOfMasses - 1; ++index)
 	{
 		Mass* mass1 = ropeSimulation->getMass(index);
@@ -188,13 +192,30 @@ void Draw(void)													// Our Drawing Code
 		Mass* mass2 = ropeSimulation->getMass(index + 1);
 		Vector3D* pos2 = &mass2->pos;
 
-		glLineWidth(4);
+		glLineWidth(1);
 		glBegin(GL_LINES);
 			glVertex3f(pos1->x, pos1->y, pos1->z);
 			glVertex3f(pos2->x, pos2->y, pos2->z);
 		glEnd();
 	}
 	// Drawing The Rope Ends Here.
+
+	// Drawing vertices
+	glPointSize(3);
+	glBegin(GL_POINTS);
+	glColor3ub(255, 100, 100);
+	for (int index = 0; index < ropeSimulation->numOfMasses - 1; ++index)
+	{
+		Mass* mass1 = ropeSimulation->getMass(index);
+		Vector3D* pos1 = &mass1->pos;
+
+		Mass* mass2 = ropeSimulation->getMass(index + 1);
+		Vector3D* pos2 = &mass2->pos;
+		
+		glVertex3f(pos1->x, pos1->y, pos1->z);
+		glVertex3f(pos2->x, pos2->y, pos2->z);
+	}
+	glEnd();
 
 	glFlush ();													// Flush The GL Rendering Pipeline
 
